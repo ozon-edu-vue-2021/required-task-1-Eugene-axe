@@ -62,7 +62,7 @@ const showLoader = function () {
 const hideLoader = function () {
     loaderTimeout = setTimeout(function () {
         loader.style.visibility = 'hidden';
-        loaderTimeout.clearTimeout();
+        clearTimeout(loaderTimeout);
     }, 700);
 }
 
@@ -90,11 +90,10 @@ const renderPictures = function (list) {
     if (!list.length) {
         throw Error(`Pictures not defined. The list length: ${list.length}`);
     }
-
-    const clone = templateImageCard.content.cloneNode(true);
     const fragment = document.createDocumentFragment();
-
+    
     list.forEach(function (element) {
+        const clone = templateImageCard.content.cloneNode(true);
         const link = clone.querySelector('a');
 
         link.href = element.url;
@@ -104,7 +103,8 @@ const renderPictures = function (list) {
         image.src = cropImage(element.download_url, 5);
         image.alt = element.author;
         image.classList.add('preview');
-        fragment.appendChild(clone)
+        image.addEventListener('click' , imageHandler); //
+        fragment.appendChild(clone);
     });
 
     container.appendChild(fragment);
@@ -151,7 +151,7 @@ const togglePopup = function () {
  */
 const actionHandler = function (evt) {
     evt.preventDefault();
-    const nextPage = evt.currentTarget.dataset.page;
+    const nextPage = +evt.currentTarget.dataset.page;
     evt.currentTarget.dataset.page = nextPage + 1;
 
     if (nextPage > MAX_PAGE_IAMGES) {
@@ -172,12 +172,12 @@ const imageHandler = function (evt) {
     evt.preventDefault();
 
     if (evt.target.closest('a')) {
-        getPictureInfo(evt.target.dataset.id);
+        getPictureInfo(evt.target.closest('a').dataset.id); //
     }
 }
 
 action.addEventListener('click', actionHandler);
-container.addEventListener('click', imageHandler);
+// container.addEventListener('click', imageHandler);
 popupClose.addEventListener('click', togglePopup);
 
 initialState();
